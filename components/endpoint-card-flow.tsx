@@ -1656,6 +1656,8 @@ export function EndpointCardFlow({ endpoint }: EndpointCardProps) {
       setStep('confirming')
       
       console.log("Transaction successful:", txReceipt)
+
+      console.log("omer burasi", address)
       
       setStep('complete')
       setIsPaid(true)
