@@ -11,6 +11,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 
+import { useX402Client } from "@/hooks/useX402Client"
+
 const flowBridgeABI = [
   {
     "inputs": [
@@ -1582,8 +1584,10 @@ export function EndpointCardFlow({ endpoint }: EndpointCardProps) {
   const [step, setStep] = useState<'idle' | 'quoting' | 'sending' | 'confirming' | 'complete'>('idle')
   const [quote, setQuote] = useState<any>(null)
   const [quoteError, setQuoteError] = useState<string | null>(null)
+  const [apiResponse, setApiResponse] = useState<any>(null)
 
   const { address, isConnected } = useAccount()
+  const x402Client = useX402Client()
 
   // Get quote from contract (Step 1)§
   const amount = Number(endpoint.price) * 1000000
@@ -1657,7 +1661,26 @@ export function EndpointCardFlow({ endpoint }: EndpointCardProps) {
       
       console.log("Transaction successful:", txReceipt)
 
-      console.log("omer burasi", address)
+      // Step 3: Call protected API after successful transaction
+      console.log("Calling protected API for:", address)
+      
+      try {
+        const apiResult = await x402Client.callProtectedAPI('/api/flow-bridge', {
+          transactionHash: txReceipt.transactionHash,
+          userAddress: address,
+          amount: amount,
+          bridgeRoute: 'Flow → Base'
+        });
+
+        if (apiResult.success) {
+          console.log("Protected API call successful:", apiResult.data);
+          setApiResponse(apiResult.data);
+        } else {
+          console.error("Protected API call failed:", apiResult.error);
+        }
+      } catch (apiError) {
+        console.error("Error calling protected API:", apiError);
+      }
       
       setStep('complete')
       setIsPaid(true)
@@ -1731,11 +1754,42 @@ export function EndpointCardFlow({ endpoint }: EndpointCardProps) {
         </div>
 
         {showResponse && (
-          <div className="mb-4 mt-6 overflow-hidden rounded-md border">
-            <div className="bg-muted px-3 py-1 text-sm font-medium">Response</div>
-            <pre className="overflow-x-auto bg-black p-4 text-xs text-white">
-              {JSON.stringify(endpoint.sampleResponse, null, 2)}
-            </pre>
+          <div className="space-y-4">
+            {/* Original endpoint response */}
+            <div className="overflow-hidden rounded-md border">
+              <div className="bg-muted px-3 py-1 text-sm font-medium">Original API Response</div>
+              <pre className="overflow-x-auto bg-black p-4 text-xs text-white">
+                {JSON.stringify(endpoint.sampleResponse, null, 2)}
+              </pre>
+            </div>
+
+            {/* x402 Protected API response */}
+            {apiResponse && (
+              <div className="overflow-hidden rounded-md border border-green-200">
+                <div className="bg-green-50 px-3 py-1 text-sm font-medium text-green-800">
+                  Protected API Response (x402)
+                </div>
+                <pre className="overflow-x-auto bg-green-900 p-4 text-xs text-green-100">
+                  {JSON.stringify(apiResponse, null, 2)}
+                </pre>
+              </div>
+            )}
+
+            {/* Loading state for API call */}
+            {x402Client.isLoading && (
+              <div className="flex items-center justify-center p-4 border border-blue-200 rounded-md bg-blue-50">
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <span className="text-sm text-blue-700">Calling protected API...</span>
+              </div>
+            )}
+
+            {/* API call error */}
+            {x402Client.error && (
+              <div className="p-4 border border-red-200 rounded-md bg-red-50">
+                <div className="text-sm font-medium text-red-700">API Call Error</div>
+                <div className="text-xs text-red-600 mt-1">{x402Client.error}</div>
+              </div>
+            )}
           </div>
         )}
       </CardContent>

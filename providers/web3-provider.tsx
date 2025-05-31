@@ -21,7 +21,6 @@ const config = getDefaultConfig({
   chains: [base, baseSepolia, flowMainnet, rootstock],
   transports: {
     [base.id]: http('https://mainnet.base.org'),
-    [baseSepolia.id]: http('https://sepolia.base.org'),
     [flowMainnet.id]: http('https://mainnet.evm.nodes.onflow.org'),
     [rootstock.id]: http('https://public-node.rsk.co'),
   },
