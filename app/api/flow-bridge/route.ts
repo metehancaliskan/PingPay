@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
+  console.log("amkkkkkkkkkkkke")
   try {
     const body = await request.json();
     const { transactionHash, userAddress, amount } = body;

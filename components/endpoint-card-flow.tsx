@@ -1782,14 +1782,6 @@ export function EndpointCardFlow({ endpoint }: EndpointCardProps) {
                 <span className="text-sm text-blue-700">Calling protected API...</span>
               </div>
             )}
-
-            {/* API call error */}
-            {x402Client.error && (
-              <div className="p-4 border border-red-200 rounded-md bg-red-50">
-                <div className="text-sm font-medium text-red-700">API Call Error</div>
-                <div className="text-xs text-red-600 mt-1">{x402Client.error}</div>
-              </div>
-            )}
           </div>
         )}
       </CardContent>

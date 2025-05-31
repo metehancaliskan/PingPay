@@ -11,7 +11,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 
-const flowBridgeABI = [
+import { useX402Client } from "@/hooks/useX402Client"
+
+const rootstockBridgeABI = [
   {
     "inputs": [
       {
@@ -1559,7 +1561,7 @@ const flowBridgeABI = [
   }
 ]
 
-const CONTRACT_ADDRESS = "0xAF54BE5B6eEc24d6BFACf1cce4eaF680A8239398"
+const CONTRACT_ADDRESS = "0xaf54Be5b6EeC24D6bFAcf1cce4eaF680a8239398"
 
 interface Endpoint {
   id: string
@@ -1575,18 +1577,20 @@ interface EndpointCardProps {
   endpoint: Endpoint
 }
 
-export function EndpointCardFlow({ endpoint }: EndpointCardProps) {
+export function EndpointCardRootstock({ endpoint }: EndpointCardProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [isPaid, setIsPaid] = useState(false)
   const [showResponse, setShowResponse] = useState(false)
   const [step, setStep] = useState<'idle' | 'quoting' | 'sending' | 'confirming' | 'complete'>('idle')
   const [quote, setQuote] = useState<any>(null)
   const [quoteError, setQuoteError] = useState<string | null>(null)
+  const [apiResponse, setApiResponse] = useState<any>(null)
 
   const { address, isConnected } = useAccount()
+  //const x402Client = useX402Client()
 
   // Get quote from contract (Step 1)§
-  const amount = Number(endpoint.price) * 1000000
+  const amount = 328392351100
 
   // Prepare SendParam for quoteSend function
   const sendParam = address ? {
@@ -1613,10 +1617,10 @@ export function EndpointCardFlow({ endpoint }: EndpointCardProps) {
       console.log("Sending quote request...")
 
       // Step 1: Get fresh quote
-      const web3 = new Web3("https://mainnet.evm.nodes.onflow.org")
+      const web3 = new Web3("https://rootstock.drpc.org")
       console.log("Contract address:", CONTRACT_ADDRESS)
 
-      const flowBridgeContract = new web3.eth.Contract(flowBridgeABI, CONTRACT_ADDRESS)
+      const flowBridgeContract = new web3.eth.Contract(rootstockBridgeABI, CONTRACT_ADDRESS)
 
 
       console.log("Contract address:", CONTRACT_ADDRESS)
@@ -1642,7 +1646,7 @@ export function EndpointCardFlow({ endpoint }: EndpointCardProps) {
       }
 
       const walletWeb3 = new Web3(provider)
-      const walletContract = new walletWeb3.eth.Contract(flowBridgeABI as any, CONTRACT_ADDRESS)
+      const walletContract = new walletWeb3.eth.Contract(rootstockBridgeABI as any, CONTRACT_ADDRESS)
       
       const txReceipt = await walletContract.methods.send(
         sendParam,
@@ -1650,12 +1654,34 @@ export function EndpointCardFlow({ endpoint }: EndpointCardProps) {
         address
       ).send({
         from: address,
-        value: freshQuote?.nativeFee || 0
+        value: freshQuote?.nativeFee || 0,
+        type: '0x0' // Use legacy transaction type to avoid EIP-1559 error
       })
 
       setStep('confirming')
       
       console.log("Transaction successful:", txReceipt)
+
+      // Step 3: Call protected API after successful transaction
+      console.log("Calling protected API for:", address)
+      
+      try {
+        //const apiResult = await x402Client.callProtectedAPI('/api/flow-bridge', {
+          //transactionHash: txReceipt.transactionHash,
+          //userAddress: address,
+          //amount: amount,
+          //bridgeRoute: 'Flow → Base'
+        //});
+
+        //if (apiResult.success) {
+          //console.log("Protected API call successful:", apiResult.data);
+          //setApiResponse(apiResult.data);
+        //} else {
+          //console.error("Protected API call failed:", apiResult.error);
+        //}
+      } catch (apiError) {
+        console.error("Error calling protected API:", apiError);
+      }
       
       setStep('complete')
       setIsPaid(true)
@@ -1729,11 +1755,34 @@ export function EndpointCardFlow({ endpoint }: EndpointCardProps) {
         </div>
 
         {showResponse && (
-          <div className="mb-4 mt-6 overflow-hidden rounded-md border">
-            <div className="bg-muted px-3 py-1 text-sm font-medium">Response</div>
-            <pre className="overflow-x-auto bg-black p-4 text-xs text-white">
-              {JSON.stringify(endpoint.sampleResponse, null, 2)}
-            </pre>
+          <div className="space-y-4">
+            {/* Original endpoint response */}
+            <div className="overflow-hidden rounded-md border">
+              <div className="bg-muted px-3 py-1 text-sm font-medium">Original API Response</div>
+              <pre className="overflow-x-auto bg-black p-4 text-xs text-white">
+                {JSON.stringify(endpoint.sampleResponse, null, 2)}
+              </pre>
+            </div>
+
+            {/* x402 Protected API response */}
+            {apiResponse && (
+              <div className="overflow-hidden rounded-md border border-green-200">
+                <div className="bg-green-50 px-3 py-1 text-sm font-medium text-green-800">
+                  Protected API Response (x402)
+                </div>
+                <pre className="overflow-x-auto bg-green-900 p-4 text-xs text-green-100">
+                  {JSON.stringify(apiResponse, null, 2)}
+                </pre>
+              </div>
+            )}
+
+            {/* Loading state for API call */}
+            {/*x402Client.isLoading && (
+              <div className="flex items-center justify-center p-4 border border-blue-200 rounded-md bg-blue-50">
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <span className="text-sm text-blue-700">Calling protected API...</span>
+              </div>
+            )*/}
           </div>
         )}
       </CardContent>

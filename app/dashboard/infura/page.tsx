@@ -6,7 +6,7 @@ import { ArrowLeft } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { ConnectWallet } from "@/components/connect-wallet"
-import { EndpointCardFlow } from "@/components/endpoint-card-flow"
+import { EndpointCardRootstock } from "@/components/endpoint-card-rootstock"
 
 export default function InfuraPage() {
   const endpoints = [
@@ -119,7 +119,7 @@ export default function InfuraPage() {
 
         <div className="grid gap-6 md:grid-cols-2">
           {endpoints.map((endpoint) => (
-            <EndpointCardFlow key={endpoint.id} endpoint={endpoint} />
+            <EndpointCardRootstock key={endpoint.id} endpoint={endpoint} />
           ))}
         </div>
       </main>
