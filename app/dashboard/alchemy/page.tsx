@@ -1,12 +1,11 @@
 "use client"
 
-import { useState } from "react"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { ConnectWallet } from "@/components/connect-wallet"
-import { EndpointCard } from "@/components/endpoint-card"
+import { EndpointCardFlow } from "@/components/endpoint-card-flow"
 
 export default function AlchemyPage() {
   const endpoints = [
@@ -116,7 +115,7 @@ export default function AlchemyPage() {
 
         <div className="grid gap-6 md:grid-cols-2">
           {endpoints.map((endpoint) => (
-            <EndpointCard key={endpoint.id} endpoint={endpoint} isWalletConnected={true} />
+            <EndpointCardFlow key={endpoint.id} endpoint={endpoint} />
           ))}
         </div>
       </main>

@@ -15,7 +15,7 @@ export default function DashboardPage() {
       description: "Powerful blockchain infrastructure and APIs for Web3 development",
       logo: "🔮",
       endpoints: 12,
-      network: "Multi-chain",
+      network: "Pay with USDF",
       color: "from-blue-500/20 to-purple-500/20",
     },
     {
@@ -24,7 +24,7 @@ export default function DashboardPage() {
       description: "DeFi protocols data, TVL analytics, and yield farming insights",
       logo: "🦙",
       endpoints: 8,
-      network: "DeFi",
+      network: "Pay with USDF",
       color: "from-green-500/20 to-emerald-500/20",
     },
     {
@@ -33,7 +33,7 @@ export default function DashboardPage() {
       description: "Reliable Ethereum and IPFS infrastructure for decentralized apps",
       logo: "🌐",
       endpoints: 15,
-      network: "Ethereum",
+      network: "Pay with USDRIF",
       color: "from-orange-500/20 to-red-500/20",
     },
     {
@@ -42,7 +42,7 @@ export default function DashboardPage() {
       description: "Complete Web3 development platform with NFT and token APIs",
       logo: "⚡",
       endpoints: 20,
-      network: "Multi-chain",
+      network: "Pay with USDRIF",
       color: "from-purple-500/20 to-pink-500/20",
     },
   ]

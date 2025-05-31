@@ -6,7 +6,7 @@ import { ArrowLeft } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { ConnectWallet } from "@/components/connect-wallet"
-import { EndpointCard } from "@/components/endpoint-card"
+import { EndpointCardFlow } from "@/components/endpoint-card-flow"
 
 export default function MoralisPage() {
   const endpoints = [
@@ -160,7 +160,7 @@ export default function MoralisPage() {
 
         <div className="grid gap-6 md:grid-cols-2">
           {endpoints.map((endpoint) => (
-            <EndpointCard key={endpoint.id} endpoint={endpoint} isWalletConnected={true} />
+            <EndpointCardFlow key={endpoint.id} endpoint={endpoint} />
           ))}
         </div>
       </main>
