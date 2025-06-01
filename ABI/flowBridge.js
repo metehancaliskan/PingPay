@@ -898,11 +898,6 @@
           "type": "tuple"
         },
         {
-          "internalType": "bytes32",
-          "name": "_guid",
-          "type": "bytes32"
-        },
-        {
           "internalType": "address",
           "name": "_receiver",
           "type": "address"
